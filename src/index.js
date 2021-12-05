@@ -159,6 +159,16 @@ async function handlePostOrPut(request, isPut) {
 
 async function handleGet(request) {
   const url = new URL(request.url)
+
+  // redir to clansty.com if GET /
+  if (url.pathname === "/") {
+    return Response.redirect("https://clansty.com", 301)
+  }
+  // redir to CDN if GET /favicon.ico
+  if (url.pathname === "/favicon.ico") {
+    return Response.redirect("https://cdn.lwqwq.com/pic/338886_4p9OhROi.webp", 301)
+  }
+
   if (staticPageMap.has(url.pathname)) {
     const item = await PB.get(staticPageMap.get(url.pathname))
     return new Response(item, {
@@ -176,10 +186,13 @@ async function handleGet(request) {
     throw new WorkerError(404, `paste of name '${short}' not found`)
   }
 
-  // handle URL redirection
-  if (role === "u") {
-    return Response.redirect(decode(item.value), 301)
-  }
+  // handle URL redirection if role is u or item.value is a HTTPS URL
+  try {
+    const decoded = decode(item.value)
+    if (role === "u" || (decoded.startsWith("https://") && !decoded.includes('\n'))) {
+      return Response.redirect(decode(item.value), 301)
+    }
+  } catch (error) { }
 
   // handle language highlight
   const lang = url.searchParams.get("lang")

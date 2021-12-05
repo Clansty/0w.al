@@ -1,5 +1,5 @@
 export const staticPageMap = new Map([
-  ['/', 'index'],
+  ['/i', 'index'],
   ['/index', 'index'],
   ['/index.html', 'index'],
   ['/tos', 'tos'],

@@ -41,7 +41,7 @@ $(BUILD_DIR)/index.html.liquid: frontend/index.html frontend/index.js frontend/s
 	@# no generation needed, simply copy
 	cp $< $@
 
-# convert liquid template to html file
+# convert liquid template to html
 $(all_html): $(BUILD_DIR)/%.html: $(BUILD_DIR)/%.html.liquid $(CONF) $(html_renderer)
 	node $(html_renderer) -c $(CONF)  -o $@ $<
 	@# remove indents to reduce size
@@ -61,7 +61,7 @@ $(all_html_preview): $(PREVIEW_DIR)/%.html: $(BUILD_DIR)/%.html $(deploy_static)
 
 # because wrangler will always build before publish, we cannot do cache here
 $(js_deploy): $(source_js_files) $(JS_LOCK)
-	yarn wrangler publish
+	wrangler publish
 	@mkdir -p $(dir $@)
 	@touch $@
 
