@@ -10,7 +10,7 @@ kv_namespaces = [
 ]
 
 [build]
-command = "yarn install && yarn build"
+command = "pnpm build"
 
 [build.upload]
 format = "service-worker"

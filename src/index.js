@@ -160,13 +160,15 @@ async function handlePostOrPut(request, isPut) {
 async function handleGet(request) {
   const url = new URL(request.url)
 
-  // redir to clansty.com if GET /
-  if (url.pathname === "/") {
-    return Response.redirect("https://clansty.com", 301)
-  }
-  // redir to CDN if GET /favicon.ico
-  if (url.pathname === "/favicon.ico") {
-    return Response.redirect("https://cdn.lwqwq.com/pic/338886_4p9OhROi.webp", 301)
+  switch (url.pathname) {
+    case '/':
+      return Response.redirect("https://nyac.at", 301)
+    case '/favicon.ico':
+      return Response.redirect("https://cdn.lwqwq.com/pic/338886_4p9OhROi.webp", 301)
+    case '/.well-known/matrix/server':
+      return corsWrapResponse(Response.json({ "m.server": "matrix.0w.al:443" }))
+    case '/.well-known/matrix/client':
+      return corsWrapResponse(Response.json({ "m.homeserver": { "base_url": "https://matrix.0w.al:443" } }))
   }
 
   if (staticPageMap.has(url.pathname)) {
@@ -174,6 +176,10 @@ async function handleGet(request) {
     return new Response(item, {
       headers: { "content-type": "text/html;charset=UTF-8" }
     })
+  }
+
+  if (url.pathname.startsWith('/.well-known')) {
+    throw new WorkerError(404)
   }
 
   const { role, short, ext } = parsePath(url.pathname)
